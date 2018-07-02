@@ -7,8 +7,7 @@ angular.module('blankonConfig', [])
 
     // Setup global settings
     .factory('settings', ['$rootScope', function($rootScope) {
-        debugger
-        var baseURL = window.location.host + "/angularjs", // Setting base url app
+        var baseURL = window.location.host + "", // Setting base url app
             settings = {
                 baseURL                 : baseURL,
                 pluginPath              : baseURL+'/assets/global/plugins/bower_components',
