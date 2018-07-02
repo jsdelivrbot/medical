@@ -1,0 +1,274 @@
+<div ng-if="viewType == 'list'">
+<div class="table-responsive mb-20">
+  <div class="loader" ng-if="isloadingDiagnosis">
+    <div class="loader--dot"></div>
+    <div class="loader--dot"></div>
+    <div class="loader--dot"></div>
+    <div class="loader--dot"></div>
+    <div class="loader--dot"></div>
+    <div class="loader--dot"></div>
+</div>
+    <div ng-if="diagnoses.length == 0" class="norec text-center"> no diagnose found</div>
+    <div ng-if="diagnoses.length > 0" class="text-bold">total records found are {{diagnoses.length}}</div>
+    <table class="table table-striped table-lilac" ng-if="!isloadingDiagnosis && diagnoses.length > 0">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Code</th>
+            <th>Category</th>
+            <th>Is Urgent?</th>
+            <th ng-if="getType() == 'Assigned'">Assigned On</th>
+            <th ng-if="getType() == 'Completed'">Completed On</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-ng-repeat="diagnose in diagnoses track by $index">
+            <td>{{diagnose.Title}}</td>
+            <th>{{diagnose.Code}}</th>
+            <td>{{diagnose.Category}}</td>
+            <td>
+                <span class="label label-success" ng-if="diagnose.IsUrgent == true">
+                    Yes
+                </span>
+                <span class="label label-warning" ng-if="diagnose.IsUrgent == false">
+                    No
+                </span>
+            </td>
+            <td ng-if="getType() == 'Assigned'">{{diagnose.AssignedOn}}</td> 
+            <td ng-if="getType() == 'Completed'">{{diagnose.CompletedOn}}</td>        
+            <td>
+                <a data-tooltip href="#" ng-click="UnAssignDiagnose(diagnose,$index)" data-toggle="modal" data-target=".diagnose-cancel-modal" data-modal-zindex class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Un Assign">
+                    <i class="fa fa-delete"></i>
+                    Un Assign
+                </a>
+                <a data-tooltip href="#" ng-click="setFillDiagnose(diagnose,$index)" data-toggle="modal" data-modal-zindex class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Fill diagnosis">
+                    <i class="fa fa-pencil"></i>
+                    Fill diagnosis
+                </a>
+            </td>    
+        </tr>
+        </tbody>
+    </table>
+</div><!-- /.table-responsive -->
+</div>
+<div ng-if="viewType == 'fill'">
+    <div class="row">
+    <div class="col-md-12">
+         <span>
+            <button class="btn btn-default pull-right" ng-click="backToList()">Go Back</button>
+        </span>
+        <!-- Start basic wizard vertical -->
+        <div data-basic-wizard-vertical>
+            <h4>Create diagnose by following steps</h4>
+            <div class="panel panel-tab panel-tab-double panel-tab-vertical row no-margin rounded shadow">
+                <!-- Start tabs heading -->
+                <div class="panel-heading no-padding col-md-3">
+                    <ul class="nav nav-tabs">
+                        <li  ng-click="setCurrentInfo('information')" ng-class="{'active':currentActive.information == true}">
+                            <a href="#tab2-1" class="li-information" data-toggle="tab">
+                                <i class="fa fa-pencil"></i>
+                                <div>
+                                    <span class="text-strong">Diagnosis 1</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li  ng-click="setCurrentInfo('confirmation')" ng-class="{'active':currentActive.confirmation == true}">
+                            <a href="#tab2-2" class="li-confirmation" data-toggle="tab" ng-class="{'not-active':!diagnosisForm.form.$valid}" >
+                                 <i class="fa fa-pencil"></i>
+                                <div>
+                                    <span class="text-strong">Diagnosis 2</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li ng-click="setCurrentInfo('submission')" ng-class="{'active':currentActive.submission == true}">
+                            <a href="#tab2-3" class="li-submission" data-toggle="tab" ng-class="{'not-active':!diagnosisForm.form.$valid || !diagnosisMod.detailsConfirmed}" >
+                                <i class="fa fa-pencil"></i>
+                                <div>
+                                    <span class="text-strong">Diagnosis 3</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li ng-click="setCurrentInfo('submission')" ng-class="{'active':currentActive.submission == true}">
+                            <a href="#tab2-3" class="li-submission" data-toggle="tab" ng-class="{'not-active':!diagnosisForm.form.$valid || !diagnosisMod.detailsConfirmed}" >
+                                 <i class="fa fa-check-circle"></i>
+                                <div>
+                                    <span class="text-strong">Confirmation</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li ng-click="setCurrentInfo('submission')" ng-class="{'active':currentActive.submission == true}">
+                            <a href="#tab2-3" class="li-submission" data-toggle="tab" ng-class="{'not-active':!diagnosisForm.form.$valid || !diagnosisMod.detailsConfirmed}" >
+                                <i class="fa fa-save"></i>
+                                <div>
+                                    <span class="text-strong">Submission</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div><!-- /.panel-heading -->
+                <!--/ End tabs heading -->
+
+                <!-- Start tabs content -->
+                <div class="panel-body col-md-9">
+                    <form name="diagnosisForm.form" ng-submit="submitDiagnose()" class="tab-content form-horizontal diagnose-form" novalidate="novalidate">
+                        <div class="tab-pane fade in active inner-all" id="tab2-1">
+                            <h4 class="page-header">be as accurate as possible</h4>
+                            <div class="form-group">
+                                <label class="col-sm-2">Title</label>
+                                <div class="col-sm-8">
+                                    <input type="text" required ng-model="diagnosisMod.Title" name="Title" class="form-control">
+                                    <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.Title.$error.required" class="text-danger mb0 valerror">Required</p>
+                                </div>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label class="col-sm-2">Is Urgent?</label>
+                                <div class="col-sm-8">
+                                    <div class="ckbox ckbox-theme">
+                                        <input id="cr_skill1" type="checkbox"  name="IsUrgent" ng-model="diagnosisMod.IsUrgent" >
+                                        <label for="cr_skill1">is it urgent diagnose?</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt">
+                                <label class="col-sm-2">Category</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" name="Category" ng-model="diagnosisMod.Category" required="">
+                                        <option value="">Please select category</option>
+                                        <option value="Normal">Normal</option>
+                                        <option value="Contagious">Contagious</option>
+                                        <option value="Harad">Harad</option>
+                                    </select>
+                                    <p ng-show="diagnosisForm.form.Category.$submitted && diagnosisForm.form.Category.$error.required" class="text-danger mb0 valerror">Required</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2">Description</label>
+                                <div class="col-sm-8">
+                                    <textarea ng-model="diagnosisMod.Description" name="Description" class="form-control"></textarea>
+                                    <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.Description.$error.required" class="text-danger mb0 valerror">Required</p>
+                                </div>
+                            </div>
+                            <ul class="pager wizard no-margin">
+                                <li class="next"><a href="javascript:void(0);" ng-click="setCurrentInfo('confirmation')" ng-disabled="!diagnosisForm.form.$valid">Next</a></li>
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade inner-all" id="tab2-2">
+                            <h4 class="page-header">please confirm the details you entered</h4>
+                             <div class="form-group mb-0">
+                                <div class="col-sm-6">
+                                    <div class="ckbox ckbox-theme">
+                                        <input id="cr_detailsConfirmed" type="checkbox"  name="detailsConfirmed" ng-model="diagnosisMod.detailsConfirmed" >
+                                        <label for="cr_detailsConfirmed">Accept the details are correct?</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="pager wizard no-margin">
+                                <li class="previous"><a href="javascript:void(0);" ng-click="setCurrentInfo('information')">See details</a></li>
+                                <li class="next"><a href="javascript:void(0);" ng-click="setCurrentInfo('submission')"  ng-if="diagnosisForm.form.$valid && diagnosisMod.detailsConfirmed">Next</a></li>
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade inner-all" id="tab2-3">
+                            <div class="wd100per text-danger cust-success-msg" ng-if="diagnoseSuccessMsg">
+                                {{diagnoseSuccessMsg}}
+                            </div>
+                            <h4 class="page-header">accept our terms and submit your diagnosis, doctors are waiting</h4>
+                            <div class="form-group mb-0">
+                                <div class="col-sm-6">
+                                    <div class="ckbox ckbox-theme">
+                                        <input id="cr_termsAccepted" type="checkbox"  name="termsAccepted" ng-model="diagnosisMod.termsAccepted" >
+                                        <label for="cr_termsAccepted">accept?</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer no-bg">
+                        <ul class="pager wizard no-margin">
+                            <li class="previous"><a href="javascript:void(0);"  ng-click="setCurrentInfo('confirmation')">Previous</a></li>
+                            <li class="next">
+                                <a href="javascript:void(0);" ng-click="submitDiagnose()"  ng-if="diagnosisForm.form.$valid && diagnosisMod.termsAccepted && diagnosisMod.detailsConfirmed" >Submit
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                        </div>
+                    </form>
+                </div><!-- /.panel-body -->
+                <!--/ End tabs content -->
+            </div><!-- /.panel -->
+        </div><!-- /#basic-wizard-vertical -->
+        <!--/ End basic wizard vertical-->
+
+    </div>
+</div><!-- /.row -->
+
+</div>
+<div class="modal fade diagnose-complete-modal" tabindex="-1" role="dialog" aria-hidden="true" >
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Complete Diagnose</h4>
+            </div>
+            <div class="modal-body">
+                <form name="diagnosisForm.form" ng-submit="submitDiagnose()" class="tab-content form-horizontal diagnose-form" novalidate="novalidate">
+                    <div class="form-group">
+                        <label class="col-sm-3 text-right">Diagnose 1</label>
+                        <div class="col-sm-5">
+                            <textarea required ng-model="diagnosisMod.Diagnose1" name="Diagnose1" class="form-control"></textarea>
+                            <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.Diagnose1.$error.required" class="text-danger mb0 valerror">Required</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3  text-right">Diagnose 2</label>
+                        <div class="col-sm-5">
+                            <textarea required ng-model="diagnosisMod.Diagnose2" name="Diagnose2" class="form-control"></textarea>
+                            <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.Diagnose2.$error.required" class="text-danger mb0 valerror">Required</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3  text-right">Diagnose 3</label>
+                        <div class="col-sm-5">
+                            <textarea required ng-model="diagnosisMod.Diagnose3" name="Diagnose3" class="form-control"></textarea>
+                            <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.Diagnose3.$error.required" class="text-danger mb0 valerror">Required</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3  text-right">Infection Type</label>
+                        <div class="col-sm-5">
+                            <select class="form-control" name="InfectionType" required="">
+                                <option value="">Please Select Infection Type</option>
+                                <option value="inf.Id" ng-repeat="inf in infectionTypes">{{inf.InfectionType}}</option>
+                            </select>
+                            <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.InfectionType.$error.required" class="text-danger mb0 valerror">Required</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3  text-right">Possible Reason</label>
+                        <div class="col-sm-5">
+                            <textarea required ng-model="diagnosisMod.PossibleReason" name="PossibleReason" class="form-control"></textarea>
+                            <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.PossibleReason.$error.required" class="text-danger mb0 valerror">Required</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3  text-right">Possible Solution</label>
+                        <div class="col-sm-5">
+                            <textarea required ng-model="diagnosisMod.PossibleSolution" name="PossibleSolution" class="form-control"></textarea>
+                            <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.PossibleSolution.$error.required" class="text-danger mb0 valerror">Required</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3  text-right">Percentage Positive</label>
+                        <div class="col-sm-5">
+                            <textarea required ng-model="diagnosisMod.PercentagePositive" name="PercentagePositive" class="form-control"></textarea>
+                            <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.PercentagePositive.$error.required" class="text-danger mb0 valerror">Required</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-assigned" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-theme" ng-click="submitFillDiagnoses()" ng-disabled="!diagnosisForm.form.$valid">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

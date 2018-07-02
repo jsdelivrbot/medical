@@ -1,0 +1,133 @@
+<!-- Brand -->
+<div class="brand">
+    <img src="./data/images/logo.png" alt="brand logo"/>
+</div>
+<div class="row">
+    <div class="col-md-6">
+<!-- Login form -->
+<form class="sign-in form-horizontal shadow rounded no-overflow" ng-submit="login()" name="signIn.form" novalidate="novalidate" method="post">
+    <div class="regDoctor">
+        Are you a registered doctor? 
+    </div>
+    <div class="sign-header">
+        <div class="form-group">
+            <div class="sign-text">
+                <span>LOGIN</span>
+            </div>
+        </div><!-- /.form-group -->
+    </div><!-- /.sign-header -->
+    <div class="sign-body">
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow wd100per text-danger cust-error-msg" ng-if="loginMessageError">
+                {{loginMessageError}}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow">
+                <input  class="form-control input-sm" type="email" required ng-model="signInMod.Email" placeholder="Email " name="Email">
+                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+            </div>
+            <p ng-show="signIn.form.$submitted && signIn.form.Email.$error.required" class="text-danger mb0 valerror">Required</p>
+            <p ng-show="signIn.form.$submitted && signIn.form.Email.$error.email" class="text-danger mb0 valerror">Please provide valid email address</p>
+        </div><!-- /.form-group -->
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow">
+                <input type="password" class="form-control input-sm" required ng-model="signInMod.Password" placeholder="Password" name="Password">
+                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+            </div>
+            <p ng-show="signIn.form.$submitted && signIn.form.Password.$error.required" class="text-danger mb0 valerror">Required</p>
+        </div><!-- /.form-group -->
+    </div><!-- /.sign-body -->
+    <div class="sign-footer">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-6">
+                    <!-- <div class="ckbox ckbox-theme">
+                        <input id="rememberme" type="checkbox">
+                        <label for="rememberme" class="rounded">Remember me</label>
+                    </div> -->
+                </div>
+                <div class="col-xs-6 text-right">
+                    <!-- <a data-ng-href="#/lost-password" title="lost password">Lost password?</a> -->
+                </div>
+            </div>
+        </div><!-- /.form-group -->
+        <div class="form-group">
+            <button type="submit" ng-disabled="signInBtn == 'Processing, please wait'" class="btn btn-theme btn-lg btn-block no-margin rounded" id="login-btn1">{{signInBtn}}</button>
+        </div><!-- /.form-group -->
+    </div><!-- /.sign-footer -->
+</form><!-- /.form-horizontal -->
+<!--/ Login form -->
+    </div>
+    <div class="col-md-6">
+
+<!-- Login form -->
+<form class="sign-up form-horizontal shadow rounded no-overflow"  ng-submit="signUp()" name="signUp.form" novalidate="novalidate" method="post">
+    <div class="regDoctor">
+       Want to join out team?
+    </div>
+    <div class="sign-header">
+        <div class="form-group">
+            <div class="sign-text">
+                <span>SIGN UP</span>
+            </div>
+        </div><!-- /.form-group -->
+    </div><!-- /.sign-header -->
+    <div class="sign-body">
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow wd100per text-danger cust-error-msg" ng-if="creationMessageError">
+                {{creationMessageError}}
+            </div>
+            <div class="input-group input-group-lg rounded no-overflow wd100per text-success cust-success-msg" ng-if="creationMessageSuccess">
+                {{creationMessageSuccess}}
+            </div>
+        </div><!-- /.form-group -->
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow wd100per">
+                <input type="text" class="form-control input-sm " required ng-model="signUpMod.FullName" placeholder="Full Name " name="FullName">
+            </div>
+            <p ng-show="signUp.form.$submitted && signUp.form.FullName.$error.required" class="text-danger mb0 valerror">Required</p>
+        </div><!-- /.form-group -->
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow wd100per">
+                <input type="text" class="form-control input-sm" required ng-model="signUpMod.PhoneNumber"  placeholder="Phone Number " name="PhoneNumber">
+            </div>
+            <p ng-show="signUp.form.$submitted && signUp.form.PhoneNumber.$error.required" class="text-danger mb0 valerror">Required</p>
+        </div><!-- /.form-group -->
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow wd100per">
+                <input type="text" class="form-control input-sm" required ng-model="signUpMod.Qualifications"  placeholder="Qualifications " name="Qualifications">
+            </div>
+            <p ng-show="signUp.form.$submitted && signUp.form.Qualifications.$error.required" class="text-danger mb0 valerror">Required</p>
+        </div><!-- /.form-group -->
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow wd100per">
+                <input type="text" class="form-control input-sm" required ng-model="signUpMod.Ratings"  placeholder="Ratings " name="Ratings">
+            </div>
+            <p ng-show="signUp.form.$submitted && signUp.form.Ratings.$error.required" class="text-danger mb0 valerror">Required</p>
+        </div><!-- /.form-group -->
+        
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow wd100per">
+                <input type="email" class="form-control input-sm" required ng-model="signUpMod.Email"  placeholder="Email " name="Email">
+            </div>
+            <p ng-show="signUp.form.$submitted && signUp.form.Email.$error.required" class="text-danger mb0 valerror">Required</p>
+            <p ng-show="signUp.form.$submitted && signUp.form.Email.$error.email" class="text-danger mb0 valerror">Please provide valid email address</p>
+        </div><!-- /.form-group -->
+        <div class="form-group">
+            <div class="input-group input-group-lg rounded no-overflow wd100per">
+                <input type="password" class="form-control input-sm" required ng-model="signUpMod.Password"  placeholder="Password" name="Password">
+            </div>
+            <p ng-show="signUp.form.$submitted && signUp.form.Password.$error.required" class="text-danger mb0 valerror">Required</p>
+        </div><!-- /.form-group -->
+    </div><!-- /.sign-body -->
+    <div class="sign-footer">
+        <div class="form-group">
+            <button type="submit" ng-disabled="signUpBtn == 'Processing, please wait'"  class="btn btn-theme btn-lg btn-block no-margin rounded" >{{signUpBtn}}</button>
+        </div><!-- /.form-group -->
+    </div><!-- /.sign-footer -->
+</form><!-- /.form-horizontal -->
+<!--/ Login form -->
+    </div>
+</div>
+

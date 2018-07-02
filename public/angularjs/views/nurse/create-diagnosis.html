@@ -1,0 +1,132 @@
+<div class="row">
+    <div class="col-md-12">
+
+        <!-- Start basic wizard vertical -->
+        <div data-basic-wizard-vertical>
+            <h4>Create diagnose by following steps</h4>
+            <div class="panel panel-tab panel-tab-double panel-tab-vertical row no-margin rounded shadow">
+                <!-- Start tabs heading -->
+                <div class="panel-heading no-padding col-md-3">
+                    <ul class="nav nav-tabs">
+                        <li  ng-click="setCurrentInfo('information')" ng-class="{'active':currentActive.information == true}">
+                            <a href="#tab2-1" class="li-information" data-toggle="tab">
+                                <i class="fa fa-pencil"></i>
+                                <div>
+                                    <span class="text-strong">Information</span>
+                                    <!-- <span>enter diagnose details</span> -->
+                                </div>
+                            </a>
+                        </li>
+                        <li  ng-click="setCurrentInfo('confirmation')" ng-class="{'active':currentActive.confirmation == true}">
+                            <a href="#tab2-2" class="li-confirmation" data-toggle="tab" ng-class="{'not-active':!diagnosisForm.form.$valid}" >
+                                 <i class="fa fa-check-circle"></i>
+                                <div>
+                                    <span class="text-strong">Confirmation</span>
+                                    <!-- <span>confirm diagnose details</span> -->
+                                </div>
+                            </a>
+                        </li>
+                        <li ng-click="setCurrentInfo('submission')" ng-class="{'active':currentActive.submission == true}">
+                            <a href="#tab2-3" class="li-submission" data-toggle="tab" ng-class="{'not-active':!diagnosisForm.form.$valid || !diagnosisMod.detailsConfirmed}" >
+                                <i class="fa fa-save"></i>
+                                <div>
+                                    <span class="text-strong">Submission</span>
+                                    <!-- <span>submit diagnose details</span> -->
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div><!-- /.panel-heading -->
+                <!--/ End tabs heading -->
+
+                <!-- Start tabs content -->
+                <div class="panel-body col-md-9">
+                    <form name="diagnosisForm.form" ng-submit="submitDiagnose()" class="tab-content form-horizontal diagnose-form" novalidate="novalidate">
+                        <div class="tab-pane fade in active inner-all" id="tab2-1">
+                            <h4 class="page-header">be as accurate as possible</h4>
+                            <div class="form-group">
+                                <label class="col-sm-2">Title</label>
+                                <div class="col-sm-8">
+                                    <input type="text" required ng-model="diagnosisMod.Title" name="Title" class="form-control">
+                                    <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.Title.$error.required" class="text-danger mb0 valerror">Required</p>
+                                </div>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label class="col-sm-2">Is Urgent?</label>
+                                <div class="col-sm-8">
+                                    <div class="ckbox ckbox-theme">
+                                        <input id="cr_skill1" type="checkbox"  name="IsUrgent" ng-model="diagnosisMod.IsUrgent" >
+                                        <label for="cr_skill1">is it urgent diagnose?</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt">
+                                <label class="col-sm-2">Category</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" name="Category" ng-model="diagnosisMod.Category" required="">
+                                        <option value="">Please select category</option>
+                                        <option value="Normal">Normal</option>
+                                        <option value="Contagious">Contagious</option>
+                                        <option value="Harad">Harad</option>
+                                    </select>
+                                    <p ng-show="diagnosisForm.form.Category.$submitted && diagnosisForm.form.Category.$error.required" class="text-danger mb0 valerror">Required</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2">Description</label>
+                                <div class="col-sm-8">
+                                    <textarea ng-model="diagnosisMod.Description" name="Description" class="form-control"></textarea>
+                                    <p ng-show="diagnosisForm.form.$submitted && diagnosisForm.form.Description.$error.required" class="text-danger mb0 valerror">Required</p>
+                                </div>
+                            </div>
+                            <ul class="pager wizard no-margin">
+                                <li class="next"><a href="javascript:void(0);" ng-click="setCurrentInfo('confirmation')" ng-disabled="!diagnosisForm.form.$valid">Next</a></li>
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade inner-all" id="tab2-2">
+                            <h4 class="page-header">please confirm the details you entered</h4>
+                             <div class="form-group mb-0">
+                                <div class="col-sm-6">
+                                    <div class="ckbox ckbox-theme">
+                                        <input id="cr_detailsConfirmed" type="checkbox"  name="detailsConfirmed" ng-model="diagnosisMod.detailsConfirmed" >
+                                        <label for="cr_detailsConfirmed">Accept the details are correct?</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="pager wizard no-margin">
+                                <li class="previous"><a href="javascript:void(0);" ng-click="setCurrentInfo('information')">See details</a></li>
+                                <li class="next"><a href="javascript:void(0);" ng-click="setCurrentInfo('submission')"  ng-if="diagnosisForm.form.$valid && diagnosisMod.detailsConfirmed">Next</a></li>
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade inner-all" id="tab2-3">
+                            <div class="wd100per text-danger cust-success-msg" ng-if="diagnoseSuccessMsg">
+                                {{diagnoseSuccessMsg}}
+                            </div>
+                            <h4 class="page-header">accept our terms and submit your diagnosis, doctors are waiting</h4>
+                            <div class="form-group mb-0">
+                                <div class="col-sm-6">
+                                    <div class="ckbox ckbox-theme">
+                                        <input id="cr_termsAccepted" type="checkbox"  name="termsAccepted" ng-model="diagnosisMod.termsAccepted" >
+                                        <label for="cr_termsAccepted">accept?</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer no-bg">
+                        <ul class="pager wizard no-margin">
+                            <li class="previous"><a href="javascript:void(0);"  ng-click="setCurrentInfo('confirmation')">Previous</a></li>
+                            <li class="next">
+                                <a href="javascript:void(0);" ng-click="submitDiagnose()"  ng-if="diagnosisForm.form.$valid && diagnosisMod.termsAccepted && diagnosisMod.detailsConfirmed" >Submit
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                        </div>
+                    </form>
+                </div><!-- /.panel-body -->
+                <!--/ End tabs content -->
+            </div><!-- /.panel -->
+        </div><!-- /#basic-wizard-vertical -->
+        <!--/ End basic wizard vertical-->
+
+    </div>
+</div><!-- /.row -->
