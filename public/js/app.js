@@ -111,7 +111,6 @@ function PoolListCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $scope.index = index;
         };
         $scope.moveDiagnose = function(diagnose,index){
-            debugger
             $scope.diagnose = diagnose;
             $scope.index = index;
             var object = {};
@@ -181,9 +180,6 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
         $scope.backToList = function(){
           $scope.viewType = "list";  
         };
-        $scope.backToList = function(){
-          $scope.viewType = "list";   
-        };
         $scope.UnAssignDiagnose = function(diagnose,index){
             $scope.diagnose = diagnose;
             var object = {};
@@ -196,16 +192,37 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $rootScope.countNewDiagnoses = $rootScope.countNewDiagnoses + 1;
             $scope.diagnoses.splice(index, 1);
         };
-        $scope.submitFillDiagnoses = function(){
+     $scope.diagnosisForm = {}; 
+     $scope.currentActive = {diagnose1 :true  };
+     $scope.diagnosisMod = {};
+     $scope.submitDiagnose = function(){
+        if($scope.diagnosisForm.form.$submitted) {
+            $scope.diagnosisForm.form.$submitted = true;
+        }
+        if($scope.diagnosisForm.form.$valid) {
             var object = {};
-            $scope.diagnose.DoctorCompleted = $rootScope.currentUser.FullName;
-            $scope.diagnose.DoctorCompletedId = $rootScope.currentUser.Id;
-            $scope.diagnose.CompletedOn = GetDateFormatted(new Date());
-            object[$scope.diagnose.Id] = $scope.diagnose;
+            $scope.diagnosisMod.DoctorCompletedId = $rootScope.currentUser.Id;
+            $scope.diagnosisMod.DoctorCompletedName = $rootScope.currentUser.FullName;
+            $scope.diagnosisMod.Code = randomStr(4);
+            $scope.diagnosisMod.CompletedOn = GetDateFormatted(new Date());
+            $scope.diagnosisMod.Status = diagnoseTypes.Completed;
+            var objAll = JSON.parse(JSON.stringify(Object.assign($scope.diagnosisMod,$scope.diagnose)));
+            objAll.Status = diagnoseTypes.Completed;
+            debugger
+            object[$scope.diagnose.Id] = objAll;
             dbRef.update(object);
-            $(".close-doctr-diag").click();
             $scope.diagnoses.splice($scope.index, 1);
-        };
+            $scope.diagnoseSuccessMsg = "diagnose is filled successfully";
+            $scope.viewType = "list";  
+        }
+     };
+     $scope.setCurrentInfo = function(type){
+        $scope.currentActive = {};
+        $scope.currentActive[type] = true;
+        $("." + "li-" + type).click();
+     };
+
+
 };
 mediShareApp.controller("DoctorNotificationCtrl", DoctorNotificationCtrl);
 DoctorNotificationCtrl.$inject = ['$scope','DbConService'];

@@ -29,8 +29,13 @@
                             isExists.type = type;
                             window.localStorage.currentUser = angular.toJson(isExists);
                             $rootScope.currentUser = isExists;  
-                            $rootScope.isThereFullPage = $state.is(securityRefs.nurse) || $state.is(securityRefs.doctor);  
-                            $state.go('dashboard');
+                            $rootScope.isThereFullPage = $state.is(securityRefs.nurse) || $state.is(securityRefs.doctor); 
+                            if ($rootScope.currentUser.type == 1) {
+                                $state.go('pool-new-diagnosis');    
+                            }
+                            else{
+                                $state.go('diagnosis-unassignednew');    
+                            }
                         }
                         else{
                             $scope.loginMessageError = "Email or password are wrong,Please try again with correct credentials";
