@@ -220,7 +220,7 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
         $scope.backToList = function(){
           $scope.viewType = "list";  
         };
-        typeNotification = "";
+        var typeNotification = "";
         $scope.UnAssignDiagnose = function(diagnose,index){
             $scope.diagnose = diagnose;
             var object = {};
