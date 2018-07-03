@@ -71,10 +71,10 @@
             </li>
             <li class="dropdown navbar-notification" ng-controller="DoctorNotificationCtrl" ng-if="checkLoggedInUserPerm('1')">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa fa-envelope-o"></i>
-                    <span class="count label label-danger rounded">{{notificationsTotalCountDoctor}}</span></a>
+                    <span class="count label label-danger rounded" ng-if="notificationsTotalCountDoctor > 0">{{notificationsTotalCountDoctor}}</span></a>
                  <div class="dropdown-menu animated flipInX">
                     <div class="dropdown-header">
-                        <span class="title">Messages <strong>({{notificationsTotalCountDoctor}})</strong></span>
+                        <span class="title">Messages <strong ng-if="notificationsTotalCountDoctor > 0">({{notificationsTotalCountDoctor}})</strong></span>
                     </div>
                     <div class="dropdown-body">
                         <!-- Start message list -->
@@ -102,10 +102,10 @@
             </li><!-- /.dropdown navbar-notification -->
             <li class="dropdown navbar-notification" ng-controller="NurseNotificationCtrl" ng-if="checkLoggedInUserPerm('2')">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa fa-envelope-o"></i>
-                    <span class="count label label-danger rounded">{{notificationsTotalCountNurse}}</span></a>
+                    <span class="count label label-danger rounded" ng-if="notificationsTotalCountNurse > 0">{{notificationsTotalCountNurse}}</span></a>
                  <div class="dropdown-menu animated flipInX">
                     <div class="dropdown-header">
-                        <span class="title">Messages <strong>({{notificationsTotalCountNurse}})</strong></span>
+                        <span class="title">Messages <strong g-if="notificationsTotalCountNurse > 0">({{notificationsTotalCountNurse}})</strong></span>
                     </div>
                     <div class="dropdown-body">
                         <!-- Start message list -->

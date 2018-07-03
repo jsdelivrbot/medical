@@ -298,7 +298,7 @@ function DoctorNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
                 $scope.notifications = $filter("filter")(reModeledArr, { DoctorAssignedId : $rootScope.currentUser.Id }, true);
                 
                 if (type != notificationTypes.All) {
-                  $scope.notifications = $filter("filter")(reModeledArr, { Status : type }, true);
+                  $scope.notifications = $filter("filter")($scope.notifications, { Status : type }, true);
                 }
                 $scope.$apply();
              }, function (error) {
@@ -372,7 +372,7 @@ function NurseNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
                 }
                 $scope.notifications = $filter("filter")(reModeledArr, { NurseCreatedId : $rootScope.currentUser.Id }, true);
                 if (type != notificationTypes.All) {
-                  $scope.notifications = $filter("filter")(reModeledArr, { Status : type }, true);
+                  $scope.notifications = $filter("filter")($scope.notifications, { Status : type }, true);
                 };
                 
                 $scope.$apply();
@@ -440,8 +440,18 @@ function NurseDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $scope.isloadingDiagnosis = false;
             dbRef.off();
             var reModeledArr = $filter("getInnerData")(data.val());
-            $scope.diagnoses = $filter("filter")(reModeledArr, { Status : type }, true);
-            $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { NurseCreatedId : $rootScope.currentUser.Id }, true);
+            if (type == diagnoseTypes.Completed) {
+              var completed = $filter("filter")(reModeledArr, { Status : diagnoseTypes.Completed }, true);
+              var accepted = $filter("filter")(reModeledArr, { Status : diagnoseTypes.Accepted }, true);
+              var rejected = $filter("filter")(reModeledArr, { Status : diagnoseTypes.Rejected }, true);
+              $scope.diagnoses = completed.concat(accepted,rejected);
+              $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { NurseCreatedId : $rootScope.currentUser.Id }, true);
+            }
+            else{
+              $scope.diagnoses = $filter("filter")(reModeledArr, { Status : type }, true);
+              $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { NurseCreatedId : $rootScope.currentUser.Id }, true);  
+            }
+            
             $scope.diagnoses = $filter('orderBy')($scope.diagnoses, '-CreatedOn');
             $scope.$apply();
          }, function (error) {

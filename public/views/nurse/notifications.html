@@ -14,6 +14,7 @@
         <thead>
         <tr>
             <th>Message</th>
+            <th>Received On</th>
             <th></th>
         </tr>
         </thead>
@@ -23,8 +24,9 @@
                 your disgnosis code <span class="fw700">{{notification.Code}}</span> has been 
                 <span ng-if="notification.type == 'AssignDiagnosis'">assigned</span>
                 <span ng-if="notification.type == 'UnAssignDiagnose'">un assigned</span>
-                <span ng-if="notification.type == 'CompletedDiagnoses'">filled</span>
+                <span ng-if="notification.type == 'CompletedDiagnoses'">completed</span>
             </td>
+            <td>{{notification.NotificationDate}}</td>
             <td>
                 <a ng-click="markAsRead(notification,$index)" ng-if="notification.Status != 'Read' && notification.Status != 'Archived'" class="btn btn-primary btn-xs" data-tooltip data-toggle="tooltip" data-placement="top" data-original-title="Mark As Read">
                     <i class="fa fa-pencil"></i>
