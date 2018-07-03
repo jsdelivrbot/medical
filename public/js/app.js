@@ -43,6 +43,11 @@ var diagnoseTypes = {
     Accepted:"Accepted",
     Rejected:"Rejected"
 };
+var notificationTypes = {
+    All:"All",
+    Unread:"Unread",
+    Archived:"Archived"
+};
 var securityRefs = {
     nurse :"nurse-security",
     doctor : "doctor-security"
@@ -51,7 +56,9 @@ var tblRefs = {
 	diagnosis :"Diagnosis",
 	doctors :"Doctors",
 	nurses :"Nurses",
-    infectiontypes :"InfectionTypes",
+  infectiontypes :"InfectionTypes",
+  nurseNotifications:"NurseNotifications",
+  doctorNotifications:"DoctorNotifications",
 };
 mediShareApp.factory('DbConService', ['$http', '$window', function ($http, $window) {
     return {
@@ -149,8 +156,18 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
                 $scope.isloadingDiagnosis = false;
                 dbRef.off();
                 var reModeledArr = $filter("getInnerData")(data.val());
-                $scope.diagnoses = $filter("filter")(reModeledArr, { Status : type }, true);
-                $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                if (type == diagnoseTypes.Completed) {
+                  var completed = $filter("filter")(reModeledArr, { Status : diagnoseTypes.Completed }, true);
+                  var accepted = $filter("filter")(reModeledArr, { Status : diagnoseTypes.Accepted }, true);
+                  var rejected = $filter("filter")(reModeledArr, { Status : diagnoseTypes.Rejected }, true);
+                  $scope.diagnoses = completed.concat(accepted,rejected);
+                  $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                }
+                else{
+                  $scope.diagnoses = $filter("filter")(reModeledArr, { Status : type }, true);
+                  $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                }
+                
                 $scope.$apply();
              }, function (error) {
                console.log("Error: " + error.code);
@@ -208,7 +225,6 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $scope.diagnosisMod.Status = diagnoseTypes.Completed;
             var objAll = JSON.parse(JSON.stringify(Object.assign($scope.diagnosisMod,$scope.diagnose)));
             objAll.Status = diagnoseTypes.Completed;
-            debugger
             object[$scope.diagnose.Id] = objAll;
             dbRef.update(object);
             $scope.diagnoses.splice($scope.index, 1);
@@ -225,9 +241,63 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
 
 };
 mediShareApp.controller("DoctorNotificationCtrl", DoctorNotificationCtrl);
-DoctorNotificationCtrl.$inject = ['$scope','DbConService'];
-function DoctorNotificationCtrl($scope,DbConService) {
-		 
+DoctorNotificationCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
+function DoctorNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
+         var dbRef = DbConService.getTableCon(tblRefs.doctorNotifications);
+         $scope.getNotifications = function(type){
+            $scope.isloadingNotification = true;
+            dbRef.on("value", function(data) {
+                $scope.isloadingNotification = false;
+                dbRef.off();
+                var reModeledArr = $filter("getInnerData")(data.val());
+                $scope.notifications = reModeledArr;
+                // $scope.notifications = $filter("filter")(reModeledArr, { Status : type }, true);
+                $scope.$apply();
+             }, function (error) {
+               console.log("Error: " + error.code);
+             });
+         };
+         function getType(){
+            var stateName = $state.current.name ;
+            switch(stateName) {
+              case "notifications-all":
+                  return notificationTypes.All;
+              case "notifications-unread":
+                  return notificationTypes.Unread;
+              case "doctor-notifications-archived":
+                  return notificationTypes.Archived;
+            };
+         };
+         $scope.getType = function(){
+           return  getType(); 
+         };
+         $scope.getNotifications(getType());  
+         $scope.setCurrentNotification = function(notification,index){
+            $scope.notification = notification;
+            $scope.index = index;
+         };
+         $scope.deleteNotification = function(){
+            var object={}
+            $scope.notification.Archived = true;
+            object[$scope.notification.Id] = $scope.notification;
+            dbRef.update(object);
+            $(".deleted-diagnose").click();
+            $scope.notifications.splice($scope.index, 1);
+        
+        };
+        $scope.moveDiagnose = function(notification,index){
+            $scope.notification = notification;
+            $scope.index = index;
+            var object = {};
+            $scope.notification.DoctorAssigned = $rootScope.currentUser.FullName;
+            $scope.notification.DoctorAssignedId = $rootScope.currentUser.Id;
+            $scope.notification.Status = diagnoseTypes.Assigned;
+            $scope.notification.AssignedOn = GetDateFormatted(new Date());
+            object[$scope.notification.Id] = $scope.notification;
+            dbRef.update(object);
+            $(".close-doctr-diag").click();
+            $scope.notifications.splice($scope.index, 1);
+        };
 };
 mediShareApp.controller("NurseNotificationCtrl", NurseNotificationCtrl);
 NurseNotificationCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
@@ -238,6 +308,7 @@ mediShareApp.controller("NurseDiagnosisCtrl", NurseDiagnosisCtrl);
 NurseDiagnosisCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
 function NurseDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
     var dbRef = DbConService.getTableCon(tblRefs.diagnosis);
+    var dbRefNotificationDoctor = DbConService.getTableCon(tblRefs.doctorNotifications);
     $scope.getDiagnosis = function(type){
         $scope.isloadingDiagnosis = true;
         dbRef.on("value", function(data) {
@@ -264,6 +335,9 @@ function NurseDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
           case "diagnosis-timeout":
               return diagnoseTypes.Timeout;
         };
+    };
+    $scope.getType = function(){
+      return getType();
     }
     $scope.getDiagnosis(getType());	 
     $scope.setCurrentDiagnose = function(diagnose,index){
@@ -277,6 +351,75 @@ function NurseDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
         $(".deleted-diagnose").click();
         $scope.diagnoses.splice($scope.index, 1);
     };
+    $scope.diagnosisForm = {};
+    $scope.updateDiagnose = function(){
+        if($scope.diagnosisForm.form.$submitted) {
+            $scope.diagnosisForm.form.$submitted = true;
+        }
+        if($scope.diagnosisForm.form.$valid) {
+          var object = {};
+            object[$scope.diagnose.Id] = $scope.diagnose;
+            dbRef.update(object);  
+            $scope.diagnoseSuccessMsg = "diagnose is updated successfully";
+            $scope.diagnoses[$scope.index] = $scope.diagnose;
+            $(".close-diagnose-edit").click();
+        }
+     };
+
+    $scope.diagnosisApprovalForm = {};
+    var typeNotification = "";
+     $scope.approveMod = {};
+    $scope.approveDiagnose = function(){
+        if($scope.diagnosisApprovalForm.form.$submitted) {
+            $scope.diagnosisApprovalForm.form.$submitted = true;
+        }
+        if($scope.diagnosisApprovalForm.form.$valid) {
+          var object = {};
+            $scope.diagnose.ApprovalReason = $scope.approveMod.ApprovalReason;
+            $scope.diagnose.Status = diagnoseTypes.Accepted;
+            $scope.diagnose.ApprovedOn = GetDateFormatted(new Date());
+            object[$scope.diagnose.Id] = $scope.diagnose;
+            typeNotification = "DiagnoseAccepted";
+            dbRef.update(object);  
+            $scope.diagnoseSuccessMsg = "diagnose is approved successfully";
+            $scope.diagnoses[$scope.index] = $scope.diagnose;
+            $(".close-approve-diagnose").click();
+            $scope.diagnoses.splice($scope.index, 1);
+            createNotification();
+        }
+     };
+
+     $scope.diagnosisRejectionForm = {};
+     $scope.rejectMod = {};
+    $scope.rejectDiagnose = function(){
+        if($scope.diagnosisRejectionForm.form.$submitted) {
+            $scope.diagnosisRejectionForm.form.$submitted = true;
+        }
+        if($scope.diagnosisRejectionForm.form.$valid) {
+            var object = {};
+            $scope.diagnose.RejectionReason = $scope.rejectMod.RejectionReason;
+            $scope.diagnose.Status = diagnoseTypes.Rejected;
+            $scope.diagnose.RejectedOn = GetDateFormatted(new Date());
+            object[$scope.diagnose.Id] = $scope.diagnose;
+            typeNotification = "DiagnoseRejected";
+            dbRef.update(object);  
+            $scope.diagnoseSuccessMsg = "diagnose is rejected successfully";
+            $scope.diagnoses[$scope.index] = $scope.diagnose;
+            $(".close-reject-diagnose").click();
+            createNotification();
+            $scope.diagnoses.splice($scope.index, 1);
+        }
+     };
+     function createNotification(){
+        var notification = angular.copy($scope.diagnose);
+        if (typeNotification) {
+           notification.type = typeNotification;
+        }
+        notification.Status = notificationTypes.Unread;
+        notification.NotificationNurseName = $rootScope.currentUser.FullName;
+        notification.NotificationNurseId = $rootScope.currentUser.Id;
+        dbRefNotificationDoctor.push(notification);  
+     };
 };
 
 mediShareApp.controller("CreateDiagnoseCtrl", CreateDiagnoseCtrl);
@@ -334,7 +477,7 @@ function DiagnoseNewCounterCtrl($scope,DbConService,$rootScope,$filter,$state) {
                 objInf.InfectionType = obj;
                 dbRefInfTypes.push(objInf);
             });
-        }
+        };
         $scope.$apply();
      }, function (error) {
        console.log("Error: " + error.code);

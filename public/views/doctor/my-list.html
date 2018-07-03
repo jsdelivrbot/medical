@@ -19,12 +19,13 @@
             <th>Category</th>
             <th>Is Urgent?</th>
             <th ng-if="getType() == 'Assigned'">Assigned On</th>
-            <th ng-if="getType() == 'Completed'">Completed On</th>
+            <th ng-if="getType() == 'Completed' || getType() == 'Accepted' || getType() == 'Rejected'">Status</th>
             <th ng-if="getType() == 'Assigned'"></th>
         </tr>
         </thead>
         <tbody>
         <tr data-ng-repeat="diagnose in diagnoses track by $index">
+
             <td>{{diagnose.Title}}</td>
             <th>{{diagnose.Code}}</th>
             <td>{{diagnose.Category}}</td>
@@ -37,7 +38,11 @@
                 </span>
             </td>
             <td ng-if="getType() == 'Assigned'">{{diagnose.AssignedOn}}</td> 
-            <td ng-if="getType() == 'Completed'">{{diagnose.CompletedOn}}</td>        
+            <td ng-if="diagnose.Status == 'Completed' || diagnose.Status == 'Accepted' || diagnose.Status == 'Rejected'">
+                <dic class="text-bold" ng-if="diagnose.CompletedOn"> Completed On {{diagnose.CompletedOn}}</div>
+                <div  class="text-bold" ng-if="diagnose.ApprovedOn"> Accepted On {{diagnose.ApprovedOn}}</div>
+                <div  class="text-bold" ng-if="diagnose.RejectedOn"> Rejected on {{diagnose.RejectedOn}}</div>
+            </td>        
             <td ng-if="getType() == 'Assigned'">
                 <a data-tooltip href="#" ng-click="UnAssignDiagnose(diagnose,$index)" data-toggle="modal" data-target=".diagnose-cancel-modal" data-modal-zindex class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Un Assign">
                     <i class="fa fa-delete"></i>
