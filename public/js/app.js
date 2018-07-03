@@ -451,7 +451,6 @@ function NurseDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
               $scope.diagnoses = $filter("filter")(reModeledArr, { Status : type }, true);
               $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { NurseCreatedId : $rootScope.currentUser.Id }, true);  
             }
-            
             $scope.diagnoses = $filter('orderBy')($scope.diagnoses, '-CreatedOn');
             $scope.$apply();
          }, function (error) {

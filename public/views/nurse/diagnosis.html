@@ -45,6 +45,9 @@
                     <i class="fa fa-pencil"></i>
                     Reject
                 </a>
+                <a data-tooltip href="#" ng-click="setCurrentDiagnose(diagnose)" data-toggle="modal" data-target=".diagnose-modal-report" data-modal-zindex class="btn btn-warning  btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Disgnosis Reports">
+                    Disgnosis Reports
+                </a>
             </td>               
             <td ng-if="getType() == 'New'">
                 <a data-tooltip href="#" ng-click="setCurrentDiagnose(diagnose)" data-toggle="modal" data-target=".diagnose-modal" data-modal-zindex class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Edit">
@@ -186,6 +189,40 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default deleted-diagnose" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-danger" ng-click="deleteDiagnose()">Process</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade diagnose-modal-report" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Disgnosis Reports</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="col-sm-2 fw700 text-right">Diagnose 1 :</label>
+                    <div class="col-sm-10">
+                        {{diagnose.diagnose1}}
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-sm-2 fw700 text-right">Diagnose 2 :</label>
+                    <div class="col-sm-10">
+                        {{diagnose.diagnose2}}
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-sm-2 fw700 text-right">Diagnose 3 :</label>
+                    <div class="col-sm-10">
+                        {{diagnose.diagnose3}}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default deleted-diagnose" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
