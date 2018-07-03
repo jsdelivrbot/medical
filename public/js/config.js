@@ -351,6 +351,7 @@ angular.module('blankonConfig', [])
             })
             .state('nurse-notifications-archived', {
                 url: '/nurse-notifications-archived',
+                controller: 'NurseNotificationCtrl',
                 templateUrl: 'views/nurse/notifications.html',
                 data: {
                     pageTitle: 'Archived Notifications',

@@ -48,7 +48,7 @@
                        console.log("Error: " + error.code);
                      });
                     }
-            }
+            };
             $scope.signUp = function(){
                 if ($scope.signUp.form.$valid) {
                     $scope.signUpBtn = "Processing, please wait";
@@ -63,7 +63,19 @@
                         else{
                             $scope.creationMessageSuccess = "Congratulations, You are registered successfully";
                             $scope.creationMessageError = "";
-                            dbRef.push($scope.signUpMod);  
+                            var refKey = dbRef.push($scope.signUpMod);  
+                            var obj = angular.copy($scope.signUpMod);
+                            obj.Id = refKey.getKey();
+                            obj.type = type;
+                            window.localStorage.currentUser = angular.toJson(obj);
+                            $rootScope.currentUser = obj;  
+                            $rootScope.isThereFullPage = $state.is(securityRefs.nurse) || $state.is(securityRefs.doctor); 
+                            if ($rootScope.currentUser.type == 1) {
+                                $state.go('pool-new-diagnosis');    
+                            }
+                            else{
+                                $state.go('diagnosis-unassignednew');    
+                            }
                         }
                         $scope.signUpBtn = "Sign Up";
                         if(!$scope.$$phase) {
@@ -73,7 +85,8 @@
                        console.log("Error: " + error.code);
                      });
                 }
-            }
+            };
+
             // =========================================================================
             // SETTING HEIGHT
             // =========================================================================

@@ -69,6 +69,69 @@
                 <!-- <span  class="diagnosebtn" ng-click="setDiagnose()" data-toggle="modal" data-target=".diagnose-modal" data-modal-zindex>Create Diagnose</span> -->
                 <span class="diagnosebtn" ui-sref="create-diagnose">Create Diagnose</span>
             </li>
+            <li class="dropdown navbar-notification" ng-controller="DoctorNotificationCtrl" ng-if="checkLoggedInUserPerm('1')">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa fa-envelope-o"></i>
+                    <span class="count label label-danger rounded">{{notificationsTotalCountDoctor}}</span></a>
+                 <div class="dropdown-menu animated flipInX">
+                    <div class="dropdown-header">
+                        <span class="title">Messages <strong>({{notificationsTotalCountDoctor}})</strong></span>
+                    </div>
+                    <div class="dropdown-body">
+                        <!-- Start message list -->
+                        <div data-nicescroll class="media-list niceScroll">
+                            <a data-ng-repeat="notification in unreadNotificationsDoctor" href="#" class="media">
+                                <div class="media-body">
+                                    <!-- <span class="media-heading">AA</span> -->
+                                    <span class="media-text">
+                                         your disgnosis code <span class="fw700">{{notification.Code}}</span> has been 
+                                        <span ng-if="notification.type == 'DiagnoseAccepted'">approved</span>
+                                        <span ng-if="notification.type == 'DiagnoseRejected'">rejected</span>
+                                    </span>
+                                    <span class="media-meta pull-right">{{notification.NotificationDate}}</span>
+                                    <!--/ End meta icon -->
+                                </div><!-- /.media-body -->
+                            </a><!-- /.media -->                           
+                        </div>
+                        <!--/ End message list -->
+
+                    </div>
+                    <div class="dropdown-footer">
+                        <a ui-sref="doctor-notifications-all">See All</a>
+                    </div>
+                </div>
+            </li><!-- /.dropdown navbar-notification -->
+            <li class="dropdown navbar-notification" ng-controller="NurseNotificationCtrl" ng-if="checkLoggedInUserPerm('2')">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa fa-envelope-o"></i>
+                    <span class="count label label-danger rounded">{{notificationsTotalCountNurse}}</span></a>
+                 <div class="dropdown-menu animated flipInX">
+                    <div class="dropdown-header">
+                        <span class="title">Messages <strong>({{notificationsTotalCountNurse}})</strong></span>
+                    </div>
+                    <div class="dropdown-body">
+                        <!-- Start message list -->
+                        <div data-nicescroll class="media-list niceScroll">
+                            <a data-ng-repeat="notification in unreadNotificationsNurse" href="#" class="media">
+                                <div class="media-body">
+                                    <!-- <span class="media-heading">AA</span> -->
+                                    <span class="media-text">
+                                         your disgnosis code <span class="fw700">{{notification.Code}}</span> has been 
+                                        <span ng-if="notification.type == 'AssignDiagnosis'">assigned</span>
+                                        <span ng-if="notification.type == 'UnAssignDiagnose'">un assigned</span>
+                                        <span ng-if="notification.type == 'CompletedDiagnoses'">filled</span>
+                                    </span>
+                                    <span class="media-meta pull-right">{{notification.NotificationDate}}</span>
+                                    <!--/ End meta icon -->
+                                </div><!-- /.media-body -->
+                            </a><!-- /.media -->                           
+                        </div>
+                        <!--/ End message list -->
+
+                    </div>
+                    <div class="dropdown-footer">
+                        <a ui-sref="nurse-notifications-all">See All</a>
+                    </div>
+                </div>
+            </li><!-- /.dropdown navbar-notification -->
             <li class="dropdown navbar-notification" ng-controller="DiagnoseNewCounterCtrl" ng-if="checkLoggedInUserPerm('1')">
                 <a ng-click="moveToNewDiagnoses()" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell-o"></i>
                     <span class="count label label-danger rounded">{{countNewDiagnoses}}</span></a>

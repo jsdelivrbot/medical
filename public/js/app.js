@@ -53,6 +53,7 @@ var diagnoseTypes = {
 var notificationTypes = {
     All:"All",
     Unread:"Unread",
+    Read:"Read",
     Archived:"Archived"
 };
 var securityRefs = {
@@ -288,8 +289,17 @@ function DoctorNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
                 $scope.isloadingNotification = false;
                 dbRef.off();
                 var reModeledArr = $filter("getInnerData")(data.val());
-                $scope.notifications = reModeledArr;
-                // $scope.notifications = $filter("filter")(reModeledArr, { Status : type }, true);
+                var unreadNotifications = $filter("filter")(angular.copy(reModeledArr), { Status : notificationTypes.Unread }, true);
+                if (unreadNotifications) {
+                  unreadNotifications = $filter("filter")(unreadNotifications, { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                  $rootScope.notificationsTotalCountDoctor =  unreadNotifications.length;
+                  $rootScope.unreadNotificationsDoctor = unreadNotifications;
+                }
+                $scope.notifications = $filter("filter")(reModeledArr, { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                
+                if (type != notificationTypes.All) {
+                  $scope.notifications = $filter("filter")(reModeledArr, { Status : type }, true);
+                }
                 $scope.$apply();
              }, function (error) {
                console.log("Error: " + error.code);
@@ -298,9 +308,9 @@ function DoctorNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
          function getType(){
             var stateName = $state.current.name ;
             switch(stateName) {
-              case "notifications-all":
+              case "doctor-notifications-all":
                   return notificationTypes.All;
-              case "notifications-unread":
+              case "doctor-notifications-unread":
                   return notificationTypes.Unread;
               case "doctor-notifications-archived":
                   return notificationTypes.Archived;
@@ -316,31 +326,108 @@ function DoctorNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
          };
          $scope.deleteNotification = function(){
             var object={}
-            $scope.notification.Archived = true;
+            $scope.notification.Status = notificationTypes.Archived;
+            $scope.notification.ArchivedOn = GetDateFormatted(new Date());
             object[$scope.notification.Id] = $scope.notification;
             dbRef.update(object);
-            $(".deleted-diagnose").click();
-            $scope.notifications.splice($scope.index, 1);
-        
+            $scope.notificationUpdateMsg = "Notification is archived successfully";
+            setTimeout(function() {
+              $scope.notificationUpdateMsg = "";
+              $scope.$apply();
+            }, 3000);
+            $(".deleted-notification").click();    
+            $scope.notifications[$scope.index] = $scope.notification;    
         };
-        $scope.moveDiagnose = function(notification,index){
+        $scope.markAsRead = function(notification,index){
             $scope.notification = notification;
             $scope.index = index;
             var object = {};
-            $scope.notification.DoctorAssigned = $rootScope.currentUser.FullName;
-            $scope.notification.DoctorAssignedId = $rootScope.currentUser.Id;
-            $scope.notification.Status = diagnoseTypes.Assigned;
-            $scope.notification.AssignedOn = GetDateFormatted(new Date());
+            $scope.notification.Status = notificationTypes.Read;
+            $scope.notification.MarkedReadOn = GetDateFormatted(new Date());
             object[$scope.notification.Id] = $scope.notification;
+            $scope.notificationUpdateMsg = "Notification is marked as read successfully";
+            setTimeout(function() {
+              $scope.notificationUpdateMsg = "";
+              $scope.$apply();
+            }, 3000);
             dbRef.update(object);
-            $(".close-doctr-diag").click();
-            $scope.notifications.splice($scope.index, 1);
+            $scope.notifications[index] = $scope.notification;
         };
 };
 mediShareApp.controller("NurseNotificationCtrl", NurseNotificationCtrl);
 NurseNotificationCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
 function NurseNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
-	
+	       var dbRef = DbConService.getTableCon(tblRefs.nurseNotifications);
+         $scope.getNotifications = function(type){
+            $scope.isloadingNotification = true;
+            dbRef.on("value", function(data) {
+                $scope.isloadingNotification = false;
+                dbRef.off();
+                var reModeledArr = $filter("getInnerData")(data.val());
+                var unreadNotifications = $filter("filter")(angular.copy(reModeledArr), { Status : notificationTypes.Unread }, true);
+                if (unreadNotifications) {
+                  unreadNotifications = $filter("filter")(unreadNotifications, { NurseCreatedId : $rootScope.currentUser.Id }, true);
+                  $rootScope.notificationsTotalCountNurse =  unreadNotifications.length;
+                  $rootScope.unreadNotificationsNurse = unreadNotifications;
+                }
+                $scope.notifications = $filter("filter")(reModeledArr, { NurseCreatedId : $rootScope.currentUser.Id }, true);
+                if (type != notificationTypes.All) {
+                  $scope.notifications = $filter("filter")(reModeledArr, { Status : type }, true);
+                };
+                
+                $scope.$apply();
+             }, function (error) {
+               console.log("Error: " + error.code);
+             });
+         };
+         function getType(){
+            var stateName = $state.current.name ;
+            switch(stateName) {
+              case "nurse-notifications-all":
+                  return notificationTypes.All;
+              case "nurse-notifications-unread":
+                  return notificationTypes.Unread;
+              case "nurse-notifications-archived":
+                  return notificationTypes.Archived;
+            };
+         };
+         $scope.getType = function(){
+           return  getType(); 
+         };
+         $scope.getNotifications(getType());  
+         $scope.setCurrentNotification = function(notification,index){
+            $scope.notification = notification;
+            $scope.index = index;
+         };
+         $scope.deleteNotification = function(){
+            var object={}
+            $scope.notification.Status = notificationTypes.Archived;
+            $scope.notification.ArchivedOn = GetDateFormatted(new Date());
+            object[$scope.notification.Id] = $scope.notification;
+            dbRef.update(object);
+            $scope.notificationUpdateMsg = "Notification is archived successfully";
+            setTimeout(function() {
+              $scope.notificationUpdateMsg = "";
+              $scope.$apply();
+            }, 3000);
+            $(".deleted-notification").click();    
+            $scope.notifications[$scope.index] = $scope.notification;    
+        };
+        $scope.markAsRead = function(notification,index){
+            $scope.notification = notification;
+            $scope.index = index;
+            var object = {};
+            $scope.notification.Status = notificationTypes.Read;
+            $scope.notification.MarkedReadOn = GetDateFormatted(new Date());
+            object[$scope.notification.Id] = $scope.notification;
+            $scope.notificationUpdateMsg = "Notification is marked as read successfully";
+            setTimeout(function() {
+              $scope.notificationUpdateMsg = "";
+              $scope.$apply();
+            }, 3000);
+            dbRef.update(object);
+            $scope.notifications[index] = $scope.notification;
+        };
 };
 mediShareApp.controller("NurseDiagnosisCtrl", NurseDiagnosisCtrl);
 NurseDiagnosisCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
