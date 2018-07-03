@@ -574,7 +574,8 @@ angular.module('blankonConfig', [])
         $rootScope.settings = settings; // global settings to be accessed from view
         if (window.localStorage.currentUser) {
             $rootScope.currentUser  =  JSON.parse(window.localStorage.currentUser);    
-        }
+        };
+
         $rootScope.state = $state;
         $rootScope.isFullPage = function(){
             return $state.is(securityRefs.nurse) || $state.is(securityRefs.doctor);
@@ -586,6 +587,12 @@ angular.module('blankonConfig', [])
             return false;
         }
         $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+           if ($rootScope.refereshCounter) {
+                $rootScope.refereshCounter();
+           };
+            if ($(".modal.fade").length > 0) {
+                $(".modal.fade").remove();
+            }
            $rootScope.isThereFullPage = ($state.is(securityRefs.nurse) || $state.is(securityRefs.doctor));
            var stateName = $state.current.name;
            if (window.localStorage.currentUser) {

@@ -34,6 +34,13 @@ mediShareApp.filter('getInnerData', function () {
     return filtered;
   };
 });
+var messageTypes = {
+  AssignDiagnosis:"AssignDiagnosis",
+  UnAssignDiagnose:"UnAssignDiagnose",
+  CompletedDiagnoses:"CompletedDiagnoses",
+  DiagnoseAccepted:"DiagnoseAccepted",
+  DiagnoseRejected:"DiagnoseRejected"
+}
 var diagnoseTypes = {
     New:"New",
     Assigned:"Assigned",
@@ -76,6 +83,7 @@ mediShareApp.controller("PoolListCtrl", PoolListCtrl);
 PoolListCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
 function PoolListCtrl($scope,DbConService,$rootScope,$state,$filter) {
 	    var dbRef = DbConService.getTableCon(tblRefs.diagnosis);
+      var dbRefNotificationNurse = DbConService.getTableCon(tblRefs.nurseNotifications);
          $scope.getDiagnosis = function(type){
             $scope.isloadingDiagnosis = true;
             dbRef.on("value", function(data) {
@@ -117,6 +125,7 @@ function PoolListCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $scope.diagnose = diagnose;
             $scope.index = index;
         };
+        var typeNotification = "";
         $scope.moveDiagnose = function(diagnose,index){
             $scope.diagnose = diagnose;
             $scope.index = index;
@@ -131,14 +140,28 @@ function PoolListCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $scope.diagnoses.splice($scope.index, 1);
             if ($rootScope.countNewDiagnoses > 0) {
                 $rootScope.countNewDiagnoses = $rootScope.countNewDiagnoses -1;
-            }
+            };
+            typeNotification = messageTypes.AssignDiagnosis;
+            createNotification();
         };
+        function createNotification(){
+          var notification = angular.copy($scope.diagnose);
+          if (typeNotification) {
+             notification.type = typeNotification;
+          }
+          notification.Status = notificationTypes.Unread;
+          notification.NotificationDoctorName = $rootScope.currentUser.FullName;
+          notification.NotificationDate = GetDateFormatted(new Date());
+          notification.NotificationDoctorId = $rootScope.currentUser.Id;
+          dbRefNotificationNurse.push(notification);  
+      };
 };
 
 mediShareApp.controller("DoctorDiagnosisCtrl", DoctorDiagnosisCtrl);
 DoctorDiagnosisCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
 function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
 		var dbRef = DbConService.getTableCon(tblRefs.diagnosis);
+    var dbRefNotificationNurse = DbConService.getTableCon(tblRefs.nurseNotifications);
         var dbRefInfTypes = DbConService.getTableCon(tblRefs.infectiontypes);
         $scope.infectionTypes = [];
         dbRefInfTypes.on("value", function(data) {
@@ -197,6 +220,7 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
         $scope.backToList = function(){
           $scope.viewType = "list";  
         };
+        typeNotification = "";
         $scope.UnAssignDiagnose = function(diagnose,index){
             $scope.diagnose = diagnose;
             var object = {};
@@ -208,6 +232,8 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
             dbRef.update(object);
             $rootScope.countNewDiagnoses = $rootScope.countNewDiagnoses + 1;
             $scope.diagnoses.splice(index, 1);
+            typeNotification = messageTypes.UnAssignDiagnose;
+            createNotification();
         };
      $scope.diagnosisForm = {}; 
      $scope.currentActive = {diagnose1 :true  };
@@ -230,6 +256,8 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $scope.diagnoses.splice($scope.index, 1);
             $scope.diagnoseSuccessMsg = "diagnose is filled successfully";
             $scope.viewType = "list";  
+            typeNotification = messageTypes.CompletedDiagnoses;
+            createNotification();
         }
      };
      $scope.setCurrentInfo = function(type){
@@ -237,7 +265,17 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
         $scope.currentActive[type] = true;
         $("." + "li-" + type).click();
      };
-
+     function createNotification(){
+        var notification = angular.copy($scope.diagnose);
+        if (typeNotification) {
+           notification.type = typeNotification;
+        }
+        notification.Status = notificationTypes.Unread;
+        notification.NotificationDoctorName = $rootScope.currentUser.FullName;
+        notification.NotificationDate = GetDateFormatted(new Date());
+        notification.NotificationDoctorId = $rootScope.currentUser.Id;
+        dbRefNotificationNurse.push(notification);  
+     };
 
 };
 mediShareApp.controller("DoctorNotificationCtrl", DoctorNotificationCtrl);
@@ -379,7 +417,7 @@ function NurseDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $scope.diagnose.Status = diagnoseTypes.Accepted;
             $scope.diagnose.ApprovedOn = GetDateFormatted(new Date());
             object[$scope.diagnose.Id] = $scope.diagnose;
-            typeNotification = "DiagnoseAccepted";
+            typeNotification = messageTypes.DiagnoseAccepted;
             dbRef.update(object);  
             $scope.diagnoseSuccessMsg = "diagnose is approved successfully";
             $scope.diagnoses[$scope.index] = $scope.diagnose;
@@ -401,7 +439,7 @@ function NurseDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
             $scope.diagnose.Status = diagnoseTypes.Rejected;
             $scope.diagnose.RejectedOn = GetDateFormatted(new Date());
             object[$scope.diagnose.Id] = $scope.diagnose;
-            typeNotification = "DiagnoseRejected";
+            typeNotification = messageTypes.DiagnoseRejected;
             dbRef.update(object);  
             $scope.diagnoseSuccessMsg = "diagnose is rejected successfully";
             $scope.diagnoses[$scope.index] = $scope.diagnose;
@@ -417,6 +455,7 @@ function NurseDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
         }
         notification.Status = notificationTypes.Unread;
         notification.NotificationNurseName = $rootScope.currentUser.FullName;
+        notification.NotificationDate = GetDateFormatted(new Date());
         notification.NotificationNurseId = $rootScope.currentUser.Id;
         dbRefNotificationDoctor.push(notification);  
      };
@@ -456,45 +495,47 @@ function CreateDiagnoseCtrl($scope,DbConService,$rootScope,$filter,$state) {
 mediShareApp.controller("DiagnoseNewCounterCtrl", DiagnoseNewCounterCtrl);
 DiagnoseNewCounterCtrl.$inject = ['$scope','DbConService','$rootScope','$filter','$state'];
 function DiagnoseNewCounterCtrl($scope,DbConService,$rootScope,$filter,$state) {
-     var dbRef = DbConService.getTableCon(tblRefs.diagnosis);
-     var dbRefInfTypes = DbConService.getTableCon(tblRefs.infectiontypes);
-    dbRefInfTypes.on("value", function(data) {
-        dbRefInfTypes.off();
-        if (!data.val()) {
-            var defaultInfTypes = [
-            "Lower Respiratory Infections",
-            "Diarrheal Diseases",
-            "Protein-Energy Malnutrition",
-            "Birth Asphyxia & Trauma ",
-            "Stroke",
-            "Preterm Birth Complications",
-            "Malaria",
-            "TB",
-            "Ischemic Heart Disease"
-            ];
-            angular.forEach(defaultInfTypes, function(obj, index) {
-                var objInf = {};
-                objInf.InfectionType = obj;
-                dbRefInfTypes.push(objInf);
-            });
-        };
-        $scope.$apply();
-     }, function (error) {
-       console.log("Error: " + error.code);
-     });
-     dbRef.on("value", function(data) {
-        dbRef.off();
-        var reModeledArr = $filter("getInnerData")(data.val());
-        $scope.diagnoses = $filter("filter")(reModeledArr, { Status : diagnoseTypes.New }, true);
-        $rootScope.countNewDiagnoses = $scope.diagnoses.length;
-        $scope.$apply();
-     }, function (error) {
-       console.log("Error: " + error.code);
-     });   
-    $scope.moveToNewDiagnoses = function(){
-        $state.go("pool-new-diagnosis");
+    $rootScope.refereshCounter = function() {
+       var dbRef = DbConService.getTableCon(tblRefs.diagnosis);
+       var dbRefInfTypes = DbConService.getTableCon(tblRefs.infectiontypes);
+      dbRefInfTypes.on("value", function(data) {
+          dbRefInfTypes.off();
+          if (!data.val()) {
+              var defaultInfTypes = [
+              "Lower Respiratory Infections",
+              "Diarrheal Diseases",
+              "Protein-Energy Malnutrition",
+              "Birth Asphyxia & Trauma ",
+              "Stroke",
+              "Preterm Birth Complications",
+              "Malaria",
+              "TB",
+              "Ischemic Heart Disease"
+              ];
+              angular.forEach(defaultInfTypes, function(obj, index) {
+                  var objInf = {};
+                  objInf.InfectionType = obj;
+                  dbRefInfTypes.push(objInf);
+              });
+          };
+          $scope.$apply();
+       }, function (error) {
+         console.log("Error: " + error.code);
+       });
+       dbRef.on("value", function(data) {
+          dbRef.off();
+          var reModeledArr = $filter("getInnerData")(data.val());
+          $scope.diagnoses = $filter("filter")(reModeledArr, { Status : diagnoseTypes.New }, true);
+          $rootScope.countNewDiagnoses = $scope.diagnoses.length;
+          $scope.$apply();
+       }, function (error) {
+         console.log("Error: " + error.code);
+       });   
+      $scope.moveToNewDiagnoses = function(){
+          $state.go("pool-new-diagnosis");
+      };
     };
-
+    $rootScope.refereshCounter();
 };
 function GetDateFormatted(date) {
         var hours = date.getHours();
@@ -521,6 +562,5 @@ function randomStr(count) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
 }
-
 
 
