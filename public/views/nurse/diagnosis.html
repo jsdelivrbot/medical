@@ -54,9 +54,11 @@
             <td ng-if="getType() == 'New'">
                 <a data-tooltip href="#" ng-click="setCurrentDiagnose(diagnose)" data-toggle="modal" data-target=".diagnose-modal" data-modal-zindex class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Edit">
                     <i class="fa fa-pencil"></i>
+                    Edit
                 </a>
                 <a data-tooltip href="#" ng-click="setCurrentDiagnose(diagnose,$index)" data-toggle="modal" data-target=".diagnose-delete-modal" data-modal-zindex class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Delete">
                     <i class="fa fa-times"></i>
+                    Delete
                 </a>
             </td>    
         </tr>
