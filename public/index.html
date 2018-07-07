@@ -153,16 +153,31 @@
         </script>
         <!--/ END GOOGLE ANALYTICS -->
     <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyBwyb39h9vgQN_5gXlToBNX7edckP8WfBw",
-        authDomain: "web-app-f5980.firebaseapp.com",
-        databaseURL: "https://web-app-f5980.firebaseio.com",
-        projectId: "web-app-f5980",
-        storageBucket: "web-app-f5980.appspot.com",
-        messagingSenderId: "94648223501"
-      };
-      firebase.initializeApp(config);
+        var hostWind = window.location.host;
+        if (hostWind == 'medishare1.herokuapp.com' || hostWind == 'localhost:5000') {
+            // Initialize Firebase
+              var config = {
+                apiKey: "AIzaSyBwyb39h9vgQN_5gXlToBNX7edckP8WfBw",
+                authDomain: "web-app-f5980.firebaseapp.com",
+                databaseURL: "https://web-app-f5980.firebaseio.com",
+                projectId: "web-app-f5980",
+                storageBucket: "web-app-f5980.appspot.com",
+                messagingSenderId: "94648223501"
+              };
+              firebase.initializeApp(config);
+        }
+        else if(hostWind == 'medi-share.herokuapp.com'){
+            // Initialize Firebase
+              var config = {
+                apiKey: "AIzaSyD7dyrPDHmGVat9nBijOuzyWqLqm9V2P2s",
+                authDomain: "medi-share.firebaseapp.com",
+                databaseURL: "https://medi-share.firebaseio.com",
+                projectId: "medi-share",
+                storageBucket: "",
+                messagingSenderId: "789664985546"
+              };
+              firebase.initializeApp(config);
+        }      
     </script>
     </body>
     <!--/ END BODY -->
