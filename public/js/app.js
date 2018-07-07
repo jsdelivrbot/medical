@@ -315,8 +315,8 @@ function DoctorNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
                   
                   if (type != notificationTypes.All) {
                     $scope.notifications = $filter("filter")($scope.notifications, { Status : type }, true);
-                    $scope.notifications = $filter('orderBy')($scope.notifications, '-NotificationDate');
                   }
+                  $scope.notifications = $filter('orderBy')($scope.notifications, '-NotificationDate');
                   $scope.$apply();
                }, function (error) {
                  console.log("Error: " + error.code);
@@ -396,7 +396,7 @@ function NurseNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
                   $scope.notifications = $filter("filter")($scope.notifications, { Status : type }, true);
                   $scope.notifications = $filter('orderBy')($scope.notifications, '-NotificationDate');
                 };
-                
+                $scope.notifications = $filter('orderBy')($scope.notifications, '-NotificationDate');
                 $scope.$apply();
              }, function (error) {
                console.log("Error: " + error.code);
