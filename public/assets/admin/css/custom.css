@@ -1,3 +1,9 @@
+.mt-lg{
+  margin-top: 15px !important;
+}
+.sidebar-circle .sidebar-menu > li > a > .icon i {
+    border-radius: 0% !important;
+}
 .mr10{
   margin-right: 10px;
 }

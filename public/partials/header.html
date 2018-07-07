@@ -54,6 +54,12 @@
                         <button type="submit" class="btn btn-theme fa fa-search form-control-feedback rounded"></button>
                     </div>
                 </form>
+                <li class="dropdown navbar-notification mt-lg" ng-click="refereshDoctorNotifications();refereshCounter()" ng-if="checkLoggedInUserPerm('1')">
+                <span class="diagnosebtn" ui-sref="create-diagnose mr10">Referesh</span>
+            </li>
+             <li class="dropdown navbar-notification mt-lg" ng-click="refereshNurseNotifications()" ng-if="checkLoggedInUserPerm('2')">
+                <span class="diagnosebtn" ui-sref="create-diagnose">Referesh</span>
+            </li>
             </li>
 
             <!--/ End form search -->
@@ -63,12 +69,7 @@
 
         <!-- Start right navigation -->
         <ul class="nav navbar-nav navbar-right"><!-- /.nav navbar-nav navbar-right -->
-            <li class="dropdown navbar-notification mt5per" ng-click="refereshDoctorNotifications();refereshCounter()" ng-if="checkLoggedInUserPerm('1')">
-                <span class="diagnosebtn" ui-sref="create-diagnose mr10">Referesh</span>
-            </li>
-             <li class="dropdown navbar-notification mt5per mr10" ng-click="refereshNurseNotifications()" ng-if="checkLoggedInUserPerm('2')">
-                <span class="diagnosebtn" ui-sref="create-diagnose">Referesh</span>
-            </li>
+            
             <!-- Start notifications -->
             <li class="dropdown navbar-notification mt5per" ng-if="checkLoggedInUserPerm('2')">
                 <!-- <span  class="diagnosebtn" ng-click="setDiagnose()" data-toggle="modal" data-target=".diagnose-modal" data-modal-zindex>Create Diagnose</span> -->
