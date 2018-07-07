@@ -29,7 +29,7 @@
             <td>
                 <a ng-click="markAsRead(notification,$index)" ng-if="notification.Status != 'Read' && notification.Status != 'Archived'" class="btn btn-primary btn-xs" data-tooltip data-toggle="tooltip" data-placement="top" data-original-title="Mark As Read">
                     <i class="fa fa-pencil"></i>
-                    Mark As Read {{notification.Status}}
+                    Mark As Read 
                 </a>
                 <a ng-if="notification.Status != 'Archived'" data-tooltip href="#" ng-click="setCurrentNotification(notification,$index)" data-toggle="modal" data-target=".notification-delete-modal" data-modal-zindex class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Archive">
                     <i class="fa fa-times"></i>

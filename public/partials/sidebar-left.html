@@ -36,13 +36,13 @@
     <!--/ End category apps -->
 
     <!-- Start navigation - blog -->
-    <li class="submenu">
+    <li class="submenu" ng-class="{'active':$state.current.name == 'pool-new-diagnosis'}">
         <a href="javascript:void(0);" ui-sref='pool-new-diagnosis'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">New Diagnosis</span>
         </a>
     </li>
-    <li class="submenu">
+    <li class="submenu"  ng-class="{'active':$state.current.name == 'pool-timeouts'}">
         <a href="javascript:void(0);"  ui-sref='pool-timeouts'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Timeouts</span>
@@ -57,19 +57,19 @@
     <!--/ End category apps -->
 
     <!-- Start navigation - blog -->
-    <li class="submenu">
+    <li class="submenu"  ng-class="{'active':$state.current.name == 'list-assigned'}">
         <a href="javascript:void(0);"  ui-sref='list-assigned'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Assigned</span>
         </a>
     </li>
-    <li class="submenu">
+    <li class="submenu"  ng-class="{'active':$state.current.name == 'list-completed'}">
         <a href="javascript:void(0);"  ui-sref='list-completed'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Completed</span>
         </a>
     </li>
-     <li class="submenu">
+     <li class="submenu"  ng-class="{'active':$state.current.name == 'list-timeout'}">
         <a href="javascript:void(0);"  ui-sref='list-timeout'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Timed Out</span>
@@ -85,19 +85,19 @@
     <!--/ End category apps -->
 
     <!-- Start navigation - blog -->
-    <li class="submenu">
+    <li class="submenu"  ng-class="{'active':$state.current.name == 'doctor-notifications-all'}">
         <a href="javascript:void(0);"  ui-sref='doctor-notifications-all'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">All</span>
         </a>
     </li>
-    <li class="submenu">
+    <li class="submenu"  ng-class="{'active':$state.current.name == 'doctor-notifications-unread'}">
         <a href="javascript:void(0);"  ui-sref='doctor-notifications-unread'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Unread</span>
         </a>
     </li>
-    <li class="submenu">
+    <li class="submenu"  ng-class="{'active':$state.current.name == 'doctor-notifications-archived'}">
         <a href="javascript:void(0);"  ui-sref='doctor-notifications-archived'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Archived</span>
@@ -131,25 +131,25 @@
     <!--/ End category apps -->
 
     <!-- Start navigation - blog -->
-    <li class="submenu">
+    <li class="submenu" ng-class="{'active':$state.current.name == 'diagnosis-unassignednew'}">
         <a href="javascript:void(0);"  ui-sref='diagnosis-unassignednew'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">UnAssigned/New</span>
         </a>
     </li>
-    <li class="submenu">
+    <li class="submenu" ng-class="{'active':$state.current.name == 'diagnosis-assigned'}">
         <a href="javascript:void(0);"  ui-sref='diagnosis-assigned'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Assigned</span>
         </a>
     </li>
-    <li class="submenu">
+    <li class="submenu" ng-class="{'active':$state.current.name == 'diagnosis-completed'}">
         <a href="javascript:void(0);"  ui-sref='diagnosis-completed'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Completed</span>
         </a>
     </li>
-    <li class="submenu">
+    <li class="submenu" ng-class="{'active':$state.current.name == 'diagnosis-timeout'}">
         <a href="javascript:void(0);"  ui-sref='diagnosis-timeout'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Timed Out</span>
@@ -164,19 +164,19 @@
     <!--/ End category apps -->
 
     <!-- Start navigation - blog -->
-    <li class="submenu">
+    <li class="submenu" ng-class="{'active':$state.current.name == 'nurse-notifications-all'}">
         <a href="javascript:void(0);"  ui-sref='nurse-notifications-all'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">All</span>
         </a>
     </li>
-    <li class="submenu">
+    <li class="submenu" ng-class="{'active':$state.current.name == 'nurse-notifications-unread'}">
         <a href="javascript:void(0);" ui-sref='nurse-notifications-unread'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Unread</span>
         </a>
     </li>
-     <li class="submenu">
+     <li class="submenu" ng-class="{'active':$state.current.name == 'nurse-notifications-archived'}">
         <a href="javascript:void(0);" ui-sref='nurse-notifications-archived'>
             <span class="icon"><i class="fa fa-globe"></i></span>
             <span class="text">Archived</span>

@@ -37,11 +37,13 @@
             </td>
             <td>{{diagnose.CreatedOn}}</td>      
             <td ng-if="getType() == 'Completed'">
-                <a data-tooltip href="#" ng-click="setCurrentDiagnose(diagnose)" data-toggle="modal" data-target=".diagnose-modal-approval" data-modal-zindex class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Approval">
+                <label ng-if="diagnose.Status == 'Accepted'" class="label label-success">{{diagnose.Status}}</label>
+                <label ng-if="diagnose.Status == 'Rejected'" class="label label-danger">{{diagnose.Status}}</label>
+                <a ng-if="diagnose.Status != 'Rejected' && diagnose.Status != 'Accepted'" data-tooltip href="#" ng-click="setCurrentDiagnose(diagnose)" data-toggle="modal" data-target=".diagnose-modal-approval" data-modal-zindex class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Approval">
                     <i class="fa fa-pencil"></i>
                     Approve
                 </a>
-                 <a data-tooltip href="#" ng-click="setCurrentDiagnose(diagnose)" data-toggle="modal" data-target=".diagnose-modal-rejection" data-modal-zindex class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Rejection">
+                 <a ng-if="diagnose.Status != 'Rejected' && diagnose.Status != 'Accepted'"  data-tooltip href="#" ng-click="setCurrentDiagnose(diagnose)" data-toggle="modal" data-target=".diagnose-modal-rejection" data-modal-zindex class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Rejection">
                     <i class="fa fa-pencil"></i>
                     Reject
                 </a>

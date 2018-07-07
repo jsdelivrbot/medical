@@ -92,6 +92,9 @@ function PoolListCtrl($scope,DbConService,$rootScope,$state,$filter) {
                 dbRef.off();
                 var reModeledArr = $filter("getInnerData")(data.val());
                 $scope.diagnoses = $filter("filter")(reModeledArr, { Status : type }, true);
+                $scope.diagnoses = $filter('orderBy')($scope.diagnoses, '-CreatedOn');
+                var currentDoctorDiagnoses = $filter("filter")(reModeledArr, { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                $scope.currentDoctorDiagnosesCount = ($filter("filter")(currentDoctorDiagnoses, { Status : diagnoseTypes.Assigned }, true)).length;
                 $scope.$apply();
              }, function (error) {
                console.log("Error: " + error.code);
@@ -144,6 +147,7 @@ function PoolListCtrl($scope,DbConService,$rootScope,$state,$filter) {
             };
             typeNotification = messageTypes.AssignDiagnosis;
             createNotification();
+            $scope.currentDoctorDiagnosesCount ++;
         };
         function createNotification(){
           var notification = angular.copy($scope.diagnose);
@@ -156,6 +160,13 @@ function PoolListCtrl($scope,DbConService,$rootScope,$state,$filter) {
           notification.NotificationDoctorId = $rootScope.currentUser.Id;
           dbRefNotificationNurse.push(notification);  
       };
+      $scope.moveToUnAssignedList = function () {
+        $(".close-doctr-diag").click();
+        setTimeout(function() {
+            $state.go('list-assigned');  
+        }, 300);
+        
+      }
 };
 
 mediShareApp.controller("DoctorDiagnosisCtrl", DoctorDiagnosisCtrl);
@@ -186,10 +197,12 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
                   var rejected = $filter("filter")(reModeledArr, { Status : diagnoseTypes.Rejected }, true);
                   $scope.diagnoses = completed.concat(accepted,rejected);
                   $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                  $scope.diagnoses = $filter('orderBy')($scope.diagnoses, '-CreatedOn');
                 }
                 else{
                   $scope.diagnoses = $filter("filter")(reModeledArr, { Status : type }, true);
                   $scope.diagnoses = $filter("filter")(angular.copy($scope.diagnoses), { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                  $scope.diagnoses = $filter('orderBy')($scope.diagnoses, '-CreatedOn');
                 }
                 
                 $scope.$apply();
@@ -282,81 +295,88 @@ function DoctorDiagnosisCtrl($scope,DbConService,$rootScope,$state,$filter) {
 mediShareApp.controller("DoctorNotificationCtrl", DoctorNotificationCtrl);
 DoctorNotificationCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
 function DoctorNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
-         var dbRef = DbConService.getTableCon(tblRefs.doctorNotifications);
-         $scope.getNotifications = function(type){
-            $scope.isloadingNotification = true;
-            dbRef.on("value", function(data) {
-                $scope.isloadingNotification = false;
-                dbRef.off();
-                var reModeledArr = $filter("getInnerData")(data.val());
-                var unreadNotifications = $filter("filter")(angular.copy(reModeledArr), { Status : notificationTypes.Unread }, true);
-                if (unreadNotifications) {
-                  unreadNotifications = $filter("filter")(unreadNotifications, { DoctorAssignedId : $rootScope.currentUser.Id }, true);
-                  $rootScope.notificationsTotalCountDoctor =  unreadNotifications.length;
-                  $rootScope.unreadNotificationsDoctor = unreadNotifications;
-                }
-                $scope.notifications = $filter("filter")(reModeledArr, { DoctorAssignedId : $rootScope.currentUser.Id }, true);
-                
-                if (type != notificationTypes.All) {
-                  $scope.notifications = $filter("filter")($scope.notifications, { Status : type }, true);
-                }
+        $rootScope.refereshDoctorNotifications = function () {
+        
+           var dbRef = DbConService.getTableCon(tblRefs.doctorNotifications);
+           $scope.getNotifications = function(type){
+              $scope.isloadingNotification = true;
+              dbRef.on("value", function(data) {
+                  $scope.isloadingNotification = false;
+                  dbRef.off();
+                  var reModeledArr = $filter("getInnerData")(data.val());
+                  var unreadNotifications = $filter("filter")(angular.copy(reModeledArr), { Status : notificationTypes.Unread }, true);
+                  if (unreadNotifications) {
+                    unreadNotifications = $filter("filter")(unreadNotifications, { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                    $rootScope.notificationsTotalCountDoctor =  unreadNotifications.length;
+                    unreadNotifications = $filter('orderBy')(unreadNotifications, '-NotificationDate');
+                    $rootScope.unreadNotificationsDoctor = unreadNotifications;
+                  }
+                  $scope.notifications = $filter("filter")(reModeledArr, { DoctorAssignedId : $rootScope.currentUser.Id }, true);
+                  
+                  if (type != notificationTypes.All) {
+                    $scope.notifications = $filter("filter")($scope.notifications, { Status : type }, true);
+                    $scope.notifications = $filter('orderBy')($scope.notifications, '-NotificationDate');
+                  }
+                  $scope.$apply();
+               }, function (error) {
+                 console.log("Error: " + error.code);
+               });
+           };
+           function getType(){
+              var stateName = $state.current.name ;
+              switch(stateName) {
+                case "doctor-notifications-all":
+                    return notificationTypes.All;
+                case "doctor-notifications-unread":
+                    return notificationTypes.Unread;
+                case "doctor-notifications-archived":
+                    return notificationTypes.Archived;
+              };
+           };
+           $scope.getType = function(){
+             return  getType(); 
+           };
+           $scope.getNotifications(getType());  
+           $scope.setCurrentNotification = function(notification,index){
+              $scope.notification = notification;
+              $scope.index = index;
+           };
+           $scope.deleteNotification = function(){
+              var object={}
+              $scope.notification.Status = notificationTypes.Archived;
+              $scope.notification.ArchivedOn = GetDateFormatted(new Date());
+              object[$scope.notification.Id] = $scope.notification;
+              dbRef.update(object);
+              $scope.notificationUpdateMsg = "Notification is archived successfully";
+              setTimeout(function() {
+                $scope.notificationUpdateMsg = "";
                 $scope.$apply();
-             }, function (error) {
-               console.log("Error: " + error.code);
-             });
-         };
-         function getType(){
-            var stateName = $state.current.name ;
-            switch(stateName) {
-              case "doctor-notifications-all":
-                  return notificationTypes.All;
-              case "doctor-notifications-unread":
-                  return notificationTypes.Unread;
-              case "doctor-notifications-archived":
-                  return notificationTypes.Archived;
-            };
-         };
-         $scope.getType = function(){
-           return  getType(); 
-         };
-         $scope.getNotifications(getType());  
-         $scope.setCurrentNotification = function(notification,index){
-            $scope.notification = notification;
-            $scope.index = index;
-         };
-         $scope.deleteNotification = function(){
-            var object={}
-            $scope.notification.Status = notificationTypes.Archived;
-            $scope.notification.ArchivedOn = GetDateFormatted(new Date());
-            object[$scope.notification.Id] = $scope.notification;
-            dbRef.update(object);
-            $scope.notificationUpdateMsg = "Notification is archived successfully";
-            setTimeout(function() {
-              $scope.notificationUpdateMsg = "";
-              $scope.$apply();
-            }, 3000);
-            $(".deleted-notification").click();    
-            $scope.notifications[$scope.index] = $scope.notification;    
+              }, 3000);
+              $(".deleted-notification").click();    
+              $scope.notifications[$scope.index] = $scope.notification;    
+          };
+          $scope.markAsRead = function(notification,index){
+              $scope.notification = notification;
+              $scope.index = index;
+              var object = {};
+              $scope.notification.Status = notificationTypes.Read;
+              $scope.notification.MarkedReadOn = GetDateFormatted(new Date());
+              object[$scope.notification.Id] = $scope.notification;
+              $scope.notificationUpdateMsg = "Notification is marked as read successfully";
+              setTimeout(function() {
+                $scope.notificationUpdateMsg = "";
+                $scope.$apply();
+              }, 3000);
+              dbRef.update(object);
+              $scope.notifications[index] = $scope.notification;
+          };
         };
-        $scope.markAsRead = function(notification,index){
-            $scope.notification = notification;
-            $scope.index = index;
-            var object = {};
-            $scope.notification.Status = notificationTypes.Read;
-            $scope.notification.MarkedReadOn = GetDateFormatted(new Date());
-            object[$scope.notification.Id] = $scope.notification;
-            $scope.notificationUpdateMsg = "Notification is marked as read successfully";
-            setTimeout(function() {
-              $scope.notificationUpdateMsg = "";
-              $scope.$apply();
-            }, 3000);
-            dbRef.update(object);
-            $scope.notifications[index] = $scope.notification;
-        };
+        $rootScope.refereshDoctorNotifications();
 };
 mediShareApp.controller("NurseNotificationCtrl", NurseNotificationCtrl);
 NurseNotificationCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
 function NurseNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
+        $rootScope.refereshNurseNotifications = function () {
 	       var dbRef = DbConService.getTableCon(tblRefs.nurseNotifications);
          $scope.getNotifications = function(type){
             $scope.isloadingNotification = true;
@@ -367,12 +387,14 @@ function NurseNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
                 var unreadNotifications = $filter("filter")(angular.copy(reModeledArr), { Status : notificationTypes.Unread }, true);
                 if (unreadNotifications) {
                   unreadNotifications = $filter("filter")(unreadNotifications, { NurseCreatedId : $rootScope.currentUser.Id }, true);
+                  unreadNotifications = $filter('orderBy')(unreadNotifications, '-NotificationDate');
                   $rootScope.notificationsTotalCountNurse =  unreadNotifications.length;
                   $rootScope.unreadNotificationsNurse = unreadNotifications;
                 }
                 $scope.notifications = $filter("filter")(reModeledArr, { NurseCreatedId : $rootScope.currentUser.Id }, true);
                 if (type != notificationTypes.All) {
                   $scope.notifications = $filter("filter")($scope.notifications, { Status : type }, true);
+                  $scope.notifications = $filter('orderBy')($scope.notifications, '-NotificationDate');
                 };
                 
                 $scope.$apply();
@@ -428,6 +450,8 @@ function NurseNotificationCtrl($scope,DbConService,$rootScope,$state,$filter) {
             dbRef.update(object);
             $scope.notifications[index] = $scope.notification;
         };
+      };
+      $rootScope.refereshNurseNotifications();
 };
 mediShareApp.controller("NurseDiagnosisCtrl", NurseDiagnosisCtrl);
 NurseDiagnosisCtrl.$inject = ['$scope','DbConService','$rootScope','$state','$filter'];
@@ -622,6 +646,7 @@ function DiagnoseNewCounterCtrl($scope,DbConService,$rootScope,$filter,$state) {
           dbRef.off();
           var reModeledArr = $filter("getInnerData")(data.val());
           $scope.diagnoses = $filter("filter")(reModeledArr, { Status : diagnoseTypes.New }, true);
+          $scope.diagnoses = $filter('orderBy')($scope.diagnoses, '-CreatedOn');
           $rootScope.countNewDiagnoses = $scope.diagnoses.length;
           $scope.$apply();
        }, function (error) {

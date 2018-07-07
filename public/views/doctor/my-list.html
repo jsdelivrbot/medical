@@ -40,8 +40,8 @@
             <td ng-if="getType() == 'Assigned'">{{diagnose.AssignedOn}}</td> 
             <td ng-if="diagnose.Status == 'Completed' || diagnose.Status == 'Accepted' || diagnose.Status == 'Rejected'">
                 <dic class="text-bold" ng-if="diagnose.CompletedOn"> Completed On {{diagnose.CompletedOn}}</div>
-                <div  class="text-bold" ng-if="diagnose.ApprovedOn"> Accepted On {{diagnose.ApprovedOn}}</div>
-                <div  class="text-bold" ng-if="diagnose.RejectedOn"> Rejected on {{diagnose.RejectedOn}}</div>
+                <div  class="text-bold" ng-if="diagnose.ApprovedOn"> <label class="label label-success">Accepted</label> On {{diagnose.ApprovedOn}}</div>
+                <div  class="text-bold" ng-if="diagnose.RejectedOn"> <label class="label label-danger">Rejected</label> on {{diagnose.RejectedOn}}</div>
             </td>        
             <td ng-if="getType() == 'Assigned'">
                 <a data-tooltip href="#" ng-click="UnAssignDiagnose(diagnose,$index)" data-toggle="modal" data-target=".diagnose-cancel-modal" data-modal-zindex class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Un Assign">
@@ -160,8 +160,8 @@
                         <div class="tab-pane fade inner-all" id="tab4">
                             <h4 class="page-header">please confirm the details you entered</h4>
                              <div class="form-group mb-0">
-                                <div class="col-sm-6">
-                                    <div class="ckbox ckbox-theme">
+                                <div class="col-sm-12 text-right">
+                                    <div class="ckbox ckbox-theme pull-right">
                                         <input id="cr_detailsConfirmed" type="checkbox"  name="confirmation" ng-model="diagnosisMod.confirmation" >
                                         <label for="cr_detailsConfirmed">Accept the details are correct?</label>
                                     </div>
@@ -177,8 +177,8 @@
                             </div>
                             <h4 class="page-header">accept our terms and submit your diagnosis, doctors are waiting</h4>
                             <div class="form-group mb-0">
-                                <div class="col-sm-6">
-                                    <div class="ckbox ckbox-theme">
+                                <div class="col-sm-12 text-right">
+                                    <div class="ckbox ckbox-theme pull-right    ">
                                         <input id="cr_termssubmission" type="checkbox"  name="termsAccepted" ng-model="diagnosisMod.submission" >
                                         <label for="cr_termssubmission">submit?</label>
                                     </div>

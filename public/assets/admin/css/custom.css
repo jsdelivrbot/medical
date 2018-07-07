@@ -1,3 +1,11 @@
+.mr10{
+  margin-right: 10px;
+}
+.ic-reload{
+  width:25px !important;
+  cursor: pointer;
+  height: 25px !important;
+}
 .fw700{
   font-weight: 700;
 }
